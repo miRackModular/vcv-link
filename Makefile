@@ -1,3 +1,4 @@
+V1_COMPAT=1
 # If RACK_DIR is not defined when calling the Makefile, defaults to use the Rack-SDK submodule
 RACK_DIR ?= Rack-SDK
 
@@ -16,7 +17,14 @@ ifeq ($(ARCH), win)
 	LDFLAGS += -lwsock32 -lws2_32 -liphlpapi
 endif
 
-FLAGS += -Imodules/link/include -Imodules/link/modules/asio-standalone/asio/include
+FLAGS += -Imodules/LinkKit/include
+LDFLAGS += -lLinkKit -framework UIKit -framework Foundation -framework CoreGraphics
+
+ifdef CATALYST
+	LDFLAGS += -Lmodules/LinkKit/LinkKit.xcframework/ios-arm64_x86_64-maccatalyst
+else
+	LDFLAGS += -Lmodules/LinkKit/LinkKit.xcframework/ios-arm64_armv7
+endif
 
 SOURCES += $(wildcard src/*.cpp)
 

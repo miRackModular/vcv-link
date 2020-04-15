@@ -116,21 +116,16 @@ void Link2::process(const ProcessArgs& args)
     double phase = 0.0;
     bool playing = true;
 
-    auto linkPeer = LinkPeer::get();
-
-    if (linkPeer)
+    if (api0::ablLink)
     {
-        const auto time = linkPeer->clock().micros();
-        const auto timeline = linkPeer->captureAppSessionState();
+        tempo = ABLLinkGetTempo(api0::INSTANCE->ablState);
+        phase = ABLLinkPhaseAtTime(api0::INSTANCE->ablState, api0::engineGetCurrentStepHostTime(), beats_per_bar);        
 
-        tempo = timeline.tempo();
-        phase = timeline.phaseAtTime(time, beats_per_bar);
-
-        if (linkPeer->isStartStopSyncEnabled())
+        if (ABLLinkIsStartStopSyncEnabled(api0::ablLink))
         {
             if (m_startStopEnabled)
             {
-                playing = timeline.isPlaying();
+                playing = ABLLinkIsPlaying(api0::INSTANCE->ablState);
 
                 if (playing && !m_lastPlayingState)
                 {
@@ -141,6 +136,8 @@ void Link2::process(const ProcessArgs& args)
             m_lastPlayingState = playing;
         }
     }
+    else
+        playing = false;
 
     const double offset = params[OFFSET_PARAM].getValue() * (5.0 * tick_length);
     int tick = static_cast<int>(std::floor((phase + offset) / tick_length));
@@ -260,7 +257,7 @@ struct Link2StartStopMenuItem : rack::MenuItem
 {
 	Link2* module;
 
-    void onAction(const rack::event::Action&) override
+    void onAction(rack::event::Action&) override
     {
         const bool enable = module->startStopEnabled();
         module->setStartStopEnabled(!enable);

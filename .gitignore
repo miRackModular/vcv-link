@@ -4,3 +4,4 @@ plugin.dll
 plugin.dylib
 plugin.dll
 dist
+modules/LinkKit

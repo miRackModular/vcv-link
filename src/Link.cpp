@@ -103,13 +103,9 @@ void Link::process(const ProcessArgs& args)
 
     double phase = 0.0;
 
-    auto linkPeer = LinkPeer::get();
-
-    if (linkPeer)
+    if (api0::ablLink)
     {
-        const auto time = linkPeer->clock().micros();
-        const auto timeline = linkPeer->captureAppSessionState();
-        phase = timeline.phaseAtTime(time, beats_per_bar);
+        phase = ABLLinkPhaseAtTime(api0::INSTANCE->ablState, api0::engineGetCurrentStepHostTime(), beats_per_bar);        
     }
 
     const double offset = params[OFFSET_PARAM].getValue() * (5.0 * tick_length);

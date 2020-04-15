@@ -26,24 +26,20 @@
 #undef debug
 #undef info
 
-#if LINK_PLATFORM_WINDOWS
-#include <stdint.h>
-#include <stdlib.h>
-#define htonll(x) _byteswap_uint64(x)
-#define ntohll(x) _byteswap_uint64(x)
-#endif
+#include "instance.hpp"
+#include "ABLLink.h"
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#include <ableton/Link.hpp>
-#pragma GCC diagnostic pop
+namespace api0 {
+    extern ABLLinkRef ablLink;
+
+    uint64_t engineGetCurrentStepHostTime();
+    void audioSetAbletonLinkNeeded(bool);
+}
 
 // Handling a single instance of ableton::Link
 // for all instancess of Link and Link2 modules
 
 namespace LinkPeer {
-
-    ableton::Link* get();
 
     void attachModule();
     void detachModule();

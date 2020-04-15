@@ -20,39 +20,16 @@
 
 #include "LinkPeer.hpp"
 
-#include <atomic>
-
-static ableton::Link* g_link = nullptr;
-static std::atomic<int> g_instances(0);
-
 namespace LinkPeer {
-
-ableton::Link* get()
-{
-    return g_link;
-}
 
 void attachModule()
 {
-    if ((++g_instances == 1) && (g_link == nullptr))
-    {
-        g_link = new ableton::Link(120.0);
-
-        g_link->enable(true);
-        g_link->enableStartStopSync(true);
-    }
+    api0::audioSetAbletonLinkNeeded(true);
 }
 
 void detachModule()
 {
-    if ((--g_instances == 0) && (g_link != nullptr))
-    {
-        g_link->enable(false);
-        g_link->enableStartStopSync(false);
-
-        delete g_link;
-        g_link = nullptr;
-    }
+    api0::audioSetAbletonLinkNeeded(false);
 }
 
 } // namespace LinkPeer
